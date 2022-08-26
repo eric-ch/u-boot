@@ -466,6 +466,31 @@
 			"fi; "                                            \
 		"done\0"                                                  \
 	\
+	"boot_aboot="                                                     \
+		"part start ${devtype} ${devnum} "                        \
+			"${distro_bootpart} aboot_start; "		  \
+		"part size ${devtype} ${devnum} "                         \
+			"${distro_bootpart} aboot_size; "		  \
+		"${devtype} read ${loadaddr} "                            \
+			"${aboot_start} ${aboot_size}; "                  \
+		"bootm ${loadaddr}\0"					  \
+	\
+	"android_uuid_boot_type=20117f86-e985-4357-b9ee-374bc1d8487d\0"   \
+	"scan_dev_for_aboot="                                             \
+		"part type ${devtype} "                                   \
+			"${devnum}:${distro_bootpart} aboot_type; "	  \
+		"if test ${aboot_type} = ${android_uuid_boot_type}; then "\
+			"echo Found Android Boot Image;	"                 \
+			"run boot_aboot; "                                \
+		"fi;\0"                                                   \
+	"scan_dev_for_aboot_part="                                        \
+		"part list ${devtype} ${devnum} devplist; "               \
+		"env exists devplist || setenv devplist 1; "              \
+		"for distro_bootpart in ${devplist}; do "                 \
+			"run scan_dev_for_aboot; "                        \
+		"done; "                                                  \
+		"setenv devplist\0"					  \
+	\
 	"scan_dev_for_boot="                                              \
 		"echo Scanning ${devtype} "                               \
 				"${devnum}:${distro_bootpart}...; "       \
@@ -486,7 +511,8 @@
 				"run scan_dev_for_boot; "                 \
 			"fi; "                                            \
 		"done; "                                                  \
-		"setenv devplist\0"					  \
+		"setenv devplist; "                                       \
+		"run scan_dev_for_aboot_part;\0"                          \
 	\
 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
 	\

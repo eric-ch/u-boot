@@ -489,8 +489,38 @@
 		"for distro_bootpart in ${devplist}; do "                 \
 			"run scan_dev_for_aboot; "                        \
 		"done; "                                                  \
-		"setenv devplist\0"					  \
+		"setenv devplist\0"                                       \
 	\
+	"boot_ab="                                                        \
+		"if ab_select slot ${devtype} "                           \
+			"${devnum}:${misc_part}; then "                   \
+			"part start ${devtype} ${devnum} "                \
+				"boot_${slot} aboot_start; "              \
+			"part size ${devtype} ${devnum} "                 \
+				"boot_${slot} aboot_size; "               \
+			"${devtype} read ${loadaddr} "                    \
+				"${aboot_start} ${aboot_size}; "          \
+			"setenv bootargs $bootargs "                      \
+				"androidboot.slot_suffix=_$slot; "        \
+			"saveenv; "                                       \
+			"bootm ${loadaddr}; "                             \
+		"fi; "                                                    \
+		"echo Android AB boot FAILED : continuing...;\0"          \
+	"android_uuid_misc_type=82acc91f-357c-4a68-9c8f-689e1b1a23a1\0"   \
+	"scan_dev_for_misc="                                              \
+		"part type ${devtype} "                                   \
+			"${devnum}:${misc_part} misc_type; "              \
+		"if test ${misc_type} = ${android_uuid_misc_type}; then " \
+			"echo Found Android Misc Partition; "             \
+			"run boot_ab; "                                   \
+		"fi;\0"                                                   \
+	"scan_dev_for_misc_part="                                         \
+		"part list ${devtype} ${devnum} devplist; "               \
+		"env exists devplist || setenv devplist 1; "              \
+		"for misc_part in ${devplist}; do "                       \
+			"run scan_dev_for_misc; "                         \
+		"done; "                                                  \
+		"setenv devplist\0"                                       \
 	"scan_dev_for_boot="                                              \
 		"echo Scanning ${devtype} "                               \
 				"${devnum}:${distro_bootpart}...; "       \
@@ -512,6 +542,7 @@
 			"fi; "                                            \
 		"done; "                                                  \
 		"setenv devplist; "                                       \
+		"run scan_dev_for_misc_part; "                            \
 		"run scan_dev_for_aboot_part;\0"                          \
 	\
 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \

@@ -1541,6 +1541,17 @@ config CMD_AB_QCOM
 	  model where one slot can be updated in the background while running
 	  the other slot.
 
+config CMD_AB_CHROMEOS
+	bool "ab_chromeos"
+	depends on CHROMEOS_AB
+	help
+	  For Qualcomm systems with more than noe boot slot (multiple copies of
+	  the partitions), it provides it command to select which slot should
+	  be used to boot and register the boot attempt. This is used in
+	  conjonction with a system that supports and implements the A/B update
+	  model where one slot can be updated in the background while running
+	  the other slot.
+
 endmenu
 
 if NET

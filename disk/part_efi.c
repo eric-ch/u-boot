@@ -363,6 +363,15 @@ static int set_protective_mbr(struct blk_desc *dev_desc)
 	return 0;
 }
 
+int read_gpt_table(struct blk_desc *dev_desc,
+		   gpt_header *gpt_h, gpt_entry **gpt_e)
+{
+	int ret;
+
+	ret = find_valid_gpt(dev_desc, gpt_h, gpt_e);
+	return !ret ? -1 : 0;
+}
+
 int write_gpt_table(struct blk_desc *dev_desc,
 		gpt_header *gpt_h, gpt_entry *gpt_e)
 {

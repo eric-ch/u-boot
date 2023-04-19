@@ -417,6 +417,17 @@ struct part_driver {
 #if CONFIG_IS_ENABLED(EFI_PARTITION)
 /* disk/part_efi.c */
 /**
+ * read_gpt_table() - Read the GUID Partition Table from the disk
+ *
+ * @param dev_desc - block device descriptor
+ * @param gpt_h - pointer to fill with the GPT header representation
+ * @param gpt_e - pointer to fill with the GPT partition table entries
+ *
+ * Return: - zero on success, otherwise error
+ */
+int read_gpt_table(struct blk_desc *dev_desc,
+		   gpt_header *gpt_h, gpt_entry **gpt_e);
+/**
  * write_gpt_table() - Write the GUID Partition Table to disk
  *
  * @param dev_desc - block device descriptor

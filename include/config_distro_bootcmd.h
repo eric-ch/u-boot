@@ -503,7 +503,6 @@
 				"${aboot_start} ${aboot_size}; "          \
 			"setenv bootargs $bootargs "                      \
 				"androidboot.slot_suffix=_$slot; "        \
-			"saveenv; "                                       \
 			"bootm ${loadaddr}; "                             \
 		"fi; "                                                    \
 		"echo Android AB boot FAILED : continuing...;\0"          \

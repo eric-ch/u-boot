@@ -517,7 +517,6 @@
 			"setenv bootargs $bootargs "                      \
 				"androidboot.slot_suffix=_$slot "         \
 				"systemd.setenv=SLOT_SUFFIX=_$slot; "     \
-			"saveenv; "                                       \
 			"bootm ${loadaddr}; "                             \
 		"fi; "                                                    \
 		"echo QCOM AB boot FAILED: continue...;\0"                \

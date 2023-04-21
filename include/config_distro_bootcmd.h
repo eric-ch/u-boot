@@ -28,6 +28,7 @@
 #define BOOTENV_SHARED_BLKDEV_BODY(devtypel) \
 		"if " #devtypel " dev ${devnum}; then " \
 			"devtype=" #devtypel "; " \
+			"run boot_ab_qcom; " \
 			"run scan_dev_for_boot_part; " \
 		"fi\0"
 
@@ -506,6 +507,22 @@
 			"bootm ${loadaddr}; "                             \
 		"fi; "                                                    \
 		"echo Android AB boot FAILED : continuing...;\0"          \
+	"boot_ab_qcom="                                                   \
+		"if ab_qcom_select slot ${devtype} ${devnum}; then "      \
+			"part start ${devtype} ${devnum} "                \
+				"boot_${slot} boot_start; "               \
+			"part size ${devtype} ${devnum} "                 \
+				"boot_${slot} boot_size; "                \
+			"${devtype} read ${loadaddr} "                    \
+				"${boot_start} ${boot_size}; "            \
+			"setenv bootargs $bootargs "                      \
+				"androidboot.slot_suffix=_$slot "         \
+				"systemd.setenv=SLOT_SUFFIX=_$slot; "     \
+			"saveenv; "                                       \
+			"bootm ${loadaddr}; "                             \
+		"fi; "                                                    \
+		"echo QCOM AB boot FAILED: continue...;\0"                \
+	\
 	"android_uuid_misc_type=82acc91f-357c-4a68-9c8f-689e1b1a23a1\0"   \
 	"scan_dev_for_misc="                                              \
 		"part type ${devtype} "                                   \
@@ -520,7 +537,7 @@
 		"for misc_part in ${devplist}; do "                       \
 			"run scan_dev_for_misc; "                         \
 		"done; "                                                  \
-		"setenv devplist\0"                                       \
+		"setenv devplist;\0"                                      \
 	"scan_dev_for_boot="                                              \
 		"echo Scanning ${devtype} "                               \
 				"${devnum}:${distro_bootpart}...; "       \
@@ -541,9 +558,7 @@
 				"run scan_dev_for_boot; "                 \
 			"fi; "                                            \
 		"done; "                                                  \
-		"setenv devplist; "                                       \
-		"run scan_dev_for_misc_part; "                            \
-		"run scan_dev_for_aboot_part;\0"                          \
+		"setenv devplist;\0"                                       \
 	\
 	BOOT_TARGET_DEVICES(BOOTENV_DEV)                                  \
 	\

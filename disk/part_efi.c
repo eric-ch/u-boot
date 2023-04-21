@@ -390,6 +390,7 @@ int write_gpt_table(struct blk_desc *dev_desc,
 			      le32_to_cpu(gpt_h->sizeof_partition_entry));
 	gpt_h->partition_entry_array_crc32 = cpu_to_le32(calc_crc32);
 
+	gpt_h->header_crc32 = 0;
 	calc_crc32 = efi_crc32((const unsigned char *)gpt_h,
 			      le32_to_cpu(gpt_h->header_size));
 	gpt_h->header_crc32 = cpu_to_le32(calc_crc32);
